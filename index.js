@@ -1,7 +1,7 @@
 // Entry file
 import { connectDB } from "./src/config/db.js";
 import http from "http";
-import {app} from "./app.js"
+import { app } from "./app.js"
 
 import dotenv from "dotenv";
 dotenv.config();
