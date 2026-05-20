@@ -6,7 +6,7 @@ import { app } from "./app.js"
 import dotenv from "dotenv";
 dotenv.config();
 
-const startServe = async () => {
+const startServer = async () => {
   await connectDB();
   const server = http.createServer(app);
 
@@ -15,7 +15,7 @@ const startServe = async () => {
   })
 };
 
-startServe().catch((error) => {
+startServer().catch((error) => {
   console.log("Error while starting the Server : ", error);
   process.exit(1);
 })

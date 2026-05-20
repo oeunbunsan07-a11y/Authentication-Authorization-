@@ -45,7 +45,7 @@ export const registerHandler = async (_req, res) => {
       }
     );
 
-    const verifyUrl = `${getAppUrl()}/auth/verify-email?token=${verifyToken}`;
+    const verifyUrl = `${getAppUrl()}/api/auth/verify-email?token=${verifyToken}`;
 
     await sendEmail(
       newlyCreatedUser.email,
@@ -122,9 +122,6 @@ export const verifyEmailHandler = async (_req, res) => {
       message: error.message,
     })
   }
-
-
-
 }
 
 export const loginHandler = async (_req, res) => {
