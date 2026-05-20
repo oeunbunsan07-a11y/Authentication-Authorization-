@@ -191,3 +191,21 @@ export const loginHandler = async (_req, res) => {
   }
 };
 
+export const profileHandler = async (req, res) => {
+  try {
+    // req.user is already set by requireAuth middleware
+    const user = req.user;
+
+    return res.status(200).json({
+      success: true,
+      message: "User profile fetched successfully",
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
