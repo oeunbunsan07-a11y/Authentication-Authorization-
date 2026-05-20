@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  # 1. MongoDB Database Engine
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb_container
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bunsan
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # 2. Web GUI Management Tool (Optional but highly recommended)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo_express_gui
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: bunsan
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
+      ME_CONFIG_MONGODB_SERVER: mongodb # 🌟 References the mongodb service name above
+      ME_CONFIG_BASICAUTH_USERNAME: web_user
+      ME_CONFIG_BASICAUTH_PASSWORD: 123456
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo_data:

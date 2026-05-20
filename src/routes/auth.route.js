@@ -1,0 +1,11 @@
+import { Router } from "express";
+import { registerHandler, loginHandler, verifyEmailHandler } from "../controllers/auth.controller.js";
+
+const router = Router();
+
+router.post("/register", registerHandler);
+router.post("/login", loginHandler);
+router.get("/verify-email", verifyEmailHandler);
+
+
+export default router;
