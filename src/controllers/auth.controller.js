@@ -1,6 +1,6 @@
 import { sendEmail } from "../lib/email.js";
 import { User } from "../models/user.mode.js";
-import { checkPassword, generateAccessToken, generateRefreshToken, hashPassword } from "../utils/index.js";
+import { checkPassword, generateAccessToken, generateRefreshToken, hashPassword, verifyRefreshToken } from "../utils/index.js";
 
 import jwt from "jsonwebtoken";
 
@@ -173,7 +173,7 @@ export const loginHandler = async (_req, res) => {
     return res.status(201).json({
       success: true,
       message: "You are logged in successfully.",
-      accessToken : accessToken,
+      accessToken: accessToken,
       user: {
         id: user.id,
         email: user.email,
@@ -209,3 +209,65 @@ export const profileHandler = async (req, res) => {
   }
 };
 
+
+export const refreshTokenHandler = async (req, res) => {
+  try {
+    // Get old accessToken
+    const token = req.cookies.refreshToken;
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token is missing."
+      })
+    };
+
+    const payload = verifyRefreshToken(token);
+
+    const user = await User.findById(payload.sub);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found."
+      })
+    };
+
+    if (user.tokenVersion != payload.tokenVersion) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token Invalidated"
+      })
+    };
+
+    const newAccessToken = generateAccessToken(user.id, user.role, user.tokenVersion);
+    const newRefreshToken = generateRefreshToken(user.id, user.tokenVersion);
+
+    const isProd = process.env.NODE_ENV === "production";
+
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Token refreshed",
+      accessToken: newAccessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        isEmailVerified: user.isEmailVerified,
+        twoFactorEnabled: user.twoFactorEnabled,
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}
