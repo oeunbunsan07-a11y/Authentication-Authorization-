@@ -49,6 +49,7 @@ export const getTodos = async (req, res) => {
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
 
+    // Sort the latest task at the top
     const todos = await Todo.find(filter).sort({
       createdAt: -1,
     });
@@ -56,6 +57,7 @@ export const getTodos = async (req, res) => {
     return res.status(200).json({
       success: true,
       count: todos.length,
+      userName : req.user.name,
       data: todos,
     });
   } catch (error) {
